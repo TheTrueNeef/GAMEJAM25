@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class Conveyor : MonoBehaviour
 {
-    public float speed = 5f;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     private GameObject clone;
     void Start()
@@ -20,7 +19,7 @@ public class Conveyor : MonoBehaviour
         {
             Rigidbody rb = other.GetComponent<Rigidbody>();
             if (rb != null) {
-                rb.linearVelocity = -transform.right * speed;
+                rb.linearVelocity = transform.right * rb.linearVelocity.magnitude;
             }
         }
     }
