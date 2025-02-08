@@ -75,6 +75,8 @@ sysinfo.txt
 # Crashlytics generated file
 crashlytics-build.properties
 
+/EngineeringOverload/Assets/Assets/Kenney_Game_Assets_All-in-12.8.0
+
 # Packed Addressables
 /[Aa]ssets/[Aa]ddressable[Aa]ssets[Dd]ata/*/*.bin*
 
