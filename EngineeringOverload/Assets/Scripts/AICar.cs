@@ -1,98 +1,98 @@
 using UnityEngine;
 using TMPro;
-using System.Collections.Generic;
+using Unity.Cinemachine;
 using System.Collections;
 
 public class AICar : MonoBehaviour
 {
-    public List<Transform> waypoints;
-    public float speed = 5f;
-    public float turnSpeed = 2f;
-    public float loadWaitTime = 5f;
-    public List<string> products;
-    public TMP_Text loadingProgressText;
+    public CinemachineSplineCart dollyCart;
+    public float speed = 5f; // Speed of the car
+    public float acceleration = 1f;
+    public float maxSpeed = 10f;
+    public int productCount = 0; // Stores the number of products in the vehicle
     public TMP_Text productCountText;
+    public TMP_Text loadingText; // Text for displaying loading progress
+    public float loadWaitTime = 5f;
 
-    private int currentWaypointIndex = 0;
     private bool isWaitingForLoad = true;
-    private bool userSentVehicle = false;
     private float loadProgress = 0f;
+    private float currentSpeed = 0f;
+    private float splineLength = 1f; // Adjust this based on your spline length
 
     void Start()
     {
-        if (loadingProgressText != null)
-        {
-            loadingProgressText.gameObject.SetActive(true);
-            loadingProgressText.text = "Loading: 0%";
-        }
-        StartCoroutine(WaitForLoad());
+        StartCoroutine(WaitForLoad()); // Load at start
         UpdateProductUI();
     }
 
     void Update()
     {
-        if (isWaitingForLoad && !userSentVehicle) return;
-        if (waypoints.Count == 0) return;
+        if (isWaitingForLoad || dollyCart == null) return;
 
-        MoveTowardsWaypoint();
+        // Accelerate up to max speed
+        currentSpeed = Mathf.Clamp(currentSpeed + acceleration * Time.deltaTime, 0, maxSpeed);
+
+        // Move along the spline
+        dollyCart.SplinePosition += currentSpeed * Time.deltaTime;
+
+        // Check if the truck has reached the end of the spline
+        if (dollyCart.SplinePosition >= splineLength && productCount == 0)
+        {
+            dollyCart.SplinePosition = splineLength; // Clamp to endpoint
+            currentSpeed = 0f;
+
+            if (productCount == 0) // Stop only if empty
+            {
+                isWaitingForLoad = true;
+                StartCoroutine(WaitForLoad()); // Start loading
+            }
+            else
+            {
+                dollyCart.SplinePosition = 0f; // Instantly loop back
+            }
+        }
     }
 
     IEnumerator WaitForLoad()
     {
         Debug.Log("Waiting for load...");
         loadProgress = 0f;
+        UpdateLoadingUI(true);
 
         while (loadProgress < 1f)
         {
             loadProgress += Time.deltaTime / loadWaitTime;
-            if (loadingProgressText != null)
-            {
-                loadingProgressText.text = "Loading: " + Mathf.FloorToInt(loadProgress * 100) + "%";
-            }
+            UpdateLoadingUI(true);
             yield return null;
         }
 
         isWaitingForLoad = false;
-        Debug.Log("Vehicle loaded and ready to move.");
-        if (loadingProgressText != null)
-        {
-            loadingProgressText.text = "Loading: 100%";
-            loadingProgressText.gameObject.SetActive(false);
-        }
-    }
-
-    public void SendVehicle()
-    {
-        isWaitingForLoad = false;
-        userSentVehicle = true;
-        Debug.Log("User sent vehicle manually.");
-    }
-
-    void MoveTowardsWaypoint()
-    {
-        Transform targetWaypoint = waypoints[currentWaypointIndex];
-        Vector3 direction = (targetWaypoint.position - transform.position).normalized;
-        Quaternion targetRotation = Quaternion.LookRotation(direction);
-        transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, turnSpeed * Time.deltaTime);
-        transform.position += transform.forward * speed * Time.deltaTime;
-
-        if (Vector3.Distance(transform.position, targetWaypoint.position) < 1f)
-        {
-            currentWaypointIndex = (currentWaypointIndex + 1) % waypoints.Count;
-        }
-    }
-
-    public void AddProduct(string product)
-    {
-        products.Add(product);
+        productCount = Random.Range(1, 10); // Load new products
+        Debug.Log("Vehicle loaded with " + productCount + " products and ready to move.");
+        UpdateLoadingUI(false);
         UpdateProductUI();
     }
 
-    void UpdateProductUI()
+    public void UpdateProductUI()
     {
         if (productCountText != null)
         {
-            productCountText.text = "Products on board: " + products.Count;
+            productCountText.text = "Products on board: " + productCount;
+        }
+    }
+
+    void UpdateLoadingUI(bool isVisible)
+    {
+        if (loadingText != null)
+        {
+            if (isVisible)
+            {
+                loadingText.text = "Loading... " + (loadProgress * 100f).ToString("F0") + "%";
+            }
+            else
+            {
+                loadingText.text = "";
+            }
         }
     }
 }
