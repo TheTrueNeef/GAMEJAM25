@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class ConveyorBelt : MonoBehaviour
+public class Conveyor : MonoBehaviour
 {
     public float speed = 2.0f; // Speed at which the box moves
     public Transform front; // Reference to the front position
@@ -9,11 +9,10 @@ public class ConveyorBelt : MonoBehaviour
     {
         if (other.CompareTag("Box"))
         {
-            Rigidbody rb = other.GetComponent<Rigidbody>();
-            if (rb != null && front != null)
+            if (front != null)
             {
                 Vector3 direction = (front.position - other.transform.position).normalized;
-                rb.linearVelocity = direction * speed;
+                other.transform.position += direction * speed * Time.deltaTime;
             }
         }
     }
