@@ -48,7 +48,14 @@ public class GridManager : MonoBehaviour
 
     public Vector3Int[] GetOccupiedCells(Vector3Int gridPosition, GameObject prefab, int rotation)
     {
-        Bounds bounds = prefab.GetComponent<Renderer>().bounds;
+        Renderer renderer = prefab.GetComponentInChildren<Renderer>(); // Get the Renderer from child objects
+        if (renderer == null)
+        {
+            Debug.LogError("Renderer not found in prefab or its children!");
+            return new Vector3Int[0];
+        }
+
+        Bounds bounds = renderer.bounds;
         int width = Mathf.RoundToInt(bounds.size.x / gridSize);
         int height = Mathf.RoundToInt(bounds.size.z / gridSize);
 
@@ -70,4 +77,5 @@ public class GridManager : MonoBehaviour
 
         return cells.ToArray();
     }
+
 }

@@ -1,30 +1,20 @@
-using System.Runtime.CompilerServices;
-using UnityEditor;
 using UnityEngine;
 
-public class Conveyor : MonoBehaviour
+public class ConveyorBelt : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    private GameObject clone;
-    void Start()
-    {
-        // Transform myTransform = transform;
-        // clone = Instantiate(box, transform.position, Quaternion.identity);
-    }
+    public float speed = 2.0f; // Speed at which the box moves
+    public Transform front; // Reference to the front position
 
-    // Update is called once per frame
-    private void OnTriggerEnter(Collider other)
+    private void OnTriggerStay(Collider other)
     {
         if (other.CompareTag("Box"))
         {
             Rigidbody rb = other.GetComponent<Rigidbody>();
-            if (rb != null) {
-                rb.linearVelocity = transform.right * rb.linearVelocity.magnitude;
+            if (rb != null && front != null)
+            {
+                Vector3 direction = (front.position - other.transform.position).normalized;
+                rb.linearVelocity = direction * speed;
             }
         }
-    }
-    void Update()
-    {
-        
     }
 }
