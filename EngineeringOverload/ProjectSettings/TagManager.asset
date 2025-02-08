@@ -4,13 +4,11 @@
 TagManager:
   serializedVersion: 3
   tags:
-  - GearBox
-  - UpgradeBox
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - GroundGrid
   - Water
   - UI
   - 

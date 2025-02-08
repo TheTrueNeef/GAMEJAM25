@@ -1,62 +1,78 @@
 using UnityEngine;
-using Unity.Cinemachine;
 
 public class playerController : MonoBehaviour
 {
-    public float speed = 5f;
+    public float walkSpeed = 5f;
+    public float sprintSpeed = 8f; // Sprinting speed
     public float jumpHeight = 2f;
     public float gravity = 9.8f;
-    public float mouseSensitivity = 2f; // Adjust for sensitivity
+    public float mouseSensitivity = 2f;
 
     private CharacterController controller;
     private Vector3 velocity;
     private bool isGrounded;
     private float xRotation = 0f;
 
-    public Transform cameraHolder; // Assign the empty GameObject holding the camera
+    public Transform cameraHolder;
+    private bool isSprinting;
 
     void Start()
     {
         controller = GetComponent<CharacterController>();
-        Cursor.lockState = CursorLockMode.Locked; // Lock cursor to game window
-        Cursor.visible = false; // Hide cursor
+
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
     }
 
     void Update()
     {
-        // Mouse input
+        HandleMouseLook();
+        HandleMovement();
+        HandleJump();
+        ApplyGravity();
+    }
+
+    void HandleMouseLook()
+    {
         float mouseX = Input.GetAxis("Mouse X") * mouseSensitivity;
         float mouseY = Input.GetAxis("Mouse Y") * mouseSensitivity;
 
-        // Rotate player (only Y-axis)
         transform.Rotate(Vector3.up * mouseX);
 
-        // Rotate camera (only X-axis)
         xRotation -= mouseY;
-        xRotation = Mathf.Clamp(xRotation, -90f, 90f); // Clamp to prevent flipping
+        xRotation = Mathf.Clamp(xRotation, -90f, 75f);
         cameraHolder.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
+    }
 
-        // Ground check
+    void HandleMovement()
+    {
         isGrounded = controller.isGrounded;
         if (isGrounded && velocity.y < 0)
         {
-            velocity.y = -2f; // Prevents sticking to slopes
+            velocity.y = -2f;
         }
 
-        // Get input for movement
         float moveX = Input.GetAxis("Horizontal");
         float moveZ = Input.GetAxis("Vertical");
 
-        Vector3 move = transform.right * moveX + transform.forward * moveZ;
-        controller.Move(move * speed * Time.deltaTime);
+        // Check if Sprint Key is Held
+        isSprinting = Input.GetKey(KeyCode.LeftShift) && (moveX != 0 || moveZ != 0);
+        float currentSpeed = isSprinting ? sprintSpeed : walkSpeed;
 
-        // Jumping
+        Vector3 move = transform.right * moveX + transform.forward * moveZ;
+        controller.Move(move * currentSpeed * Time.deltaTime);
+    }
+
+    void HandleJump()
+    {
         if (Input.GetButtonDown("Jump") && isGrounded)
         {
             velocity.y = Mathf.Sqrt(jumpHeight * 2f * gravity);
         }
+    }
 
-        // Apply gravity
+    void ApplyGravity()
+    {
         velocity.y -= gravity * Time.deltaTime;
         controller.Move(velocity * Time.deltaTime);
     }
