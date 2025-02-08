@@ -7,10 +7,10 @@ public class BoxSpawner : MonoBehaviour
     public float speed = 5f;
     void Start()
     {
-        GameObject boxClone = GameObject.Instantiate(box, transform.position, Quaternion.identity);
+        GameObject boxClone = Instantiate(box, transform.position, Quaternion.identity);
         Rigidbody boxRB = boxClone.GetComponent<Rigidbody>();
         if (boxRB != null) {
-            boxRB.linearVelocity = -transform.forward * speed;
+            boxRB.linearVelocity = -transform.right * speed;
         }
     }
 

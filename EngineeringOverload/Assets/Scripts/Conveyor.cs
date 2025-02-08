@@ -5,11 +5,9 @@ using UnityEngine;
 public class Conveyor : MonoBehaviour
 {
     // Start is called once before the first execution of Update after the MonoBehaviour is created
-    private GameObject clone;
     void Start()
     {
-        // Transform myTransform = transform;
-        // clone = Instantiate(box, transform.position, Quaternion.identity);
+
     }
 
     // Update is called once per frame
