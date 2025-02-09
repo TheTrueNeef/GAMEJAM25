@@ -30,6 +30,7 @@ public class playerController : MonoBehaviour
     private bool isExtinguishing = false;
     private GameObject activeExtinguisherEffect; // Stores instantiated effect
 
+    public GameObject maincam;
     void Start()
     {
         controller = GetComponent<CharacterController>();
@@ -170,7 +171,7 @@ public class playerController : MonoBehaviour
             // Instantiate extinguisher effect
             if (extinguisherEffectPrefab != null && extinguisherSpawnPoint != null)
             {
-                activeExtinguisherEffect = Instantiate(extinguisherEffectPrefab, extinguisherSpawnPoint.position, extinguisherSpawnPoint.rotation);
+                activeExtinguisherEffect = Instantiate(extinguisherEffectPrefab, extinguisherSpawnPoint.position, maincam.transform.rotation);
                 activeExtinguisherEffect.transform.SetParent(extinguisherSpawnPoint); // Attach to spawn point
             }
 
