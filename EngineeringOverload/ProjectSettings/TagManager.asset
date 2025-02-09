@@ -4,6 +4,9 @@
 TagManager:
   serializedVersion: 3
   tags:
+  - Box
+  - Conveyor
+  - FireObject
   layers:
   - Default
   - TransparentFX

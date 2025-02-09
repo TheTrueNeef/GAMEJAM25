@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections;
 using System.Collections.Generic;
 
 public class playerController : MonoBehaviour
@@ -20,12 +21,17 @@ public class playerController : MonoBehaviour
     public List<GameObject> heldObjects = new List<GameObject>(5);
     public Transform objectHolder; // The empty Transform where objects will be placed
 
+    public ParticleSystem extinguisherEffect; // Fire extinguisher effect
+    public AudioSource extinguisherSound; // Fire extinguisher sound
+    public float extinguisherRange = 3f; // How far the extinguisher reaches
+    public LayerMask fireLayer; // Layer mask for fire objects
+
     private int selectedObjectIndex = 0;
+    private bool isExtinguishing = false;
 
     void Start()
     {
         controller = GetComponent<CharacterController>();
-
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
     }
@@ -37,9 +43,15 @@ public class playerController : MonoBehaviour
         HandleJump();
         ApplyGravity();
 
-        if (Input.GetButtonDown("Fire1"))
+        HandleItemSelection();
+
+        if (Input.GetButton("Fire1"))
         {
             UseSelectedObject();
+        }
+        else if (isExtinguishing)
+        {
+            StopExtinguisher();
         }
     }
 
@@ -49,7 +61,6 @@ public class playerController : MonoBehaviour
         float mouseY = Input.GetAxis("Mouse Y") * mouseSensitivity;
 
         transform.Rotate(Vector3.up * mouseX);
-
         xRotation -= mouseY;
         xRotation = Mathf.Clamp(xRotation, -90f, 75f);
         cameraHolder.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
@@ -87,40 +98,55 @@ public class playerController : MonoBehaviour
         controller.Move(velocity * Time.deltaTime);
     }
 
-    public void SnapToHolder(GameObject item)
+    void HandleItemSelection()
     {
-        if (objectHolder == null)
-        {
-            Debug.LogError("Object Holder transform is not assigned!");
-            return;
-        }
+        if (Input.GetKeyDown(KeyCode.Alpha1)) SelectObject(0);
+        if (Input.GetKeyDown(KeyCode.Alpha2)) SelectObject(1);
+        if (Input.GetKeyDown(KeyCode.Alpha3)) SelectObject(2);
+        if (Input.GetKeyDown(KeyCode.Alpha4)) SelectObject(3);
+        if (Input.GetKeyDown(KeyCode.Alpha5)) SelectObject(4);
+    }
 
-        item.transform.SetParent(objectHolder);
-        item.transform.localPosition = Vector3.zero;
-        item.transform.localRotation = Quaternion.identity;
+    void SelectObject(int index)
+    {
+        if (index >= 0 && index < heldObjects.Count)
+        {
+            selectedObjectIndex = index;
+            UpdateHeldObject();
+        }
+    }
+
+    void UpdateHeldObject()
+    {
+        for (int i = 0; i < heldObjects.Count; i++)
+        {
+            if (heldObjects[i] != null)
+            {
+                heldObjects[i].SetActive(i == selectedObjectIndex);
+            }
+        }
     }
 
     void UseSelectedObject()
     {
         if (heldObjects[selectedObjectIndex] != null)
         {
-            // Call the function based on the selected object
             switch (selectedObjectIndex)
             {
-                case 0:
-                    useFire();
+                case 0: // Fire Extinguisher
+                    UseFireExtinguisher();
                     break;
                 case 1:
-                    useWrench();
+                    UseWrench();
                     break;
                 case 2:
-                    useBlower();
+                    UseBlower();
                     break;
                 case 3:
-                    useCard();
+                    UseCard();
                     break;
                 case 4:
-                    useDrill();
+                    UseDrill();
                     break;
                 default:
                     Debug.Log("No function assigned to this item.");
@@ -129,28 +155,57 @@ public class playerController : MonoBehaviour
         }
     }
 
-    // Example functions for each object
-    void useFire()
+    void UseFireExtinguisher()
     {
-        Debug.Log("Using Fire tool!");
+        if (!isExtinguishing)
+        {
+            isExtinguishing = true;
+            if (extinguisherEffect != null) extinguisherEffect.Play();
+            if (extinguisherSound != null) extinguisherSound.Play();
+        }
+
+        // Detect fire objects in front of the player
+        Collider[] fireObjects = Physics.OverlapSphere(transform.position + transform.forward * 1.5f, extinguisherRange, fireLayer);
+        foreach (Collider fire in fireObjects)
+        {
+            Debug.Log($"Extinguishing {fire.name}");
+            fire.gameObject.SetActive(false);
+        }
+
+        // If no fire objects are detected, stop extinguishing
+        if (fireObjects.Length == 0)
+        {
+            StopExtinguisher();
+        }
     }
 
-    void useWrench()
+    void StopExtinguisher()
+    {
+        if (isExtinguishing)
+        {
+            isExtinguishing = false;
+            if (extinguisherEffect != null) extinguisherEffect.Stop();
+            if (extinguisherSound != null) extinguisherSound.Stop();
+            Debug.Log("Stopped Fire Extinguisher.");
+        }
+    }
+
+    void UseWrench()
     {
         Debug.Log("Using Wrench!");
     }
 
-    void useBlower()
+    void UseBlower()
     {
         Debug.Log("Using Blower!");
     }
 
-    void useCard()
+    void UseCard()
     {
         Debug.Log("Using Card!");
     }
 
-    void useDrill()
+    void UseDrill()
     {
         Debug.Log("Using Drill!");
     }

@@ -10,7 +10,7 @@ public class MachineProduction : MonoBehaviour
     public float pressureReleaseRate = 5f; // Pressure decrease per second when OFF
     public float cooldownTime = 3f; // Cooldown time after emergency is handled
 
-    public GameObject[] fireObjects = new GameObject[3]; // Objects that act as fire
+    public GameObject[] fireObjects = new GameObject[3]; // Fire objects with triggers
 
     public float currentPressure = 0f;
     public bool isMachineOn = false;
@@ -36,10 +36,11 @@ public class MachineProduction : MonoBehaviour
 
     void Update()
     {
-        if(isMachineOn && !isProducing) 
+        if (isMachineOn && !isProducing)
         {
             StartProduction();
         }
+
         if (isMachineOn && isProducing)
         {
             BuildPressure();
@@ -96,7 +97,7 @@ public class MachineProduction : MonoBehaviour
 
         yield return new WaitForSeconds(productionTime);
 
-        if (!isOnFire && isMachineOn) // Only enable if machine didn't overheat and is still on
+        if (!isOnFire && isMachineOn)
         {
             if (producedObject != null)
             {
@@ -134,7 +135,7 @@ public class MachineProduction : MonoBehaviour
 
     void TriggerFire()
     {
-        if (!isOnFire) // Ensure fire only triggers once
+        if (!isOnFire)
         {
             isProducing = false;
             isMachineOn = false;
@@ -142,18 +143,29 @@ public class MachineProduction : MonoBehaviour
 
             if (producedObject != null && producedObject.activeSelf)
             {
-                producedObject.SetActive(false); // Only disable if it was produced
+                producedObject.SetActive(false);
             }
 
             foreach (var obj in fireObjects)
             {
                 if (obj != null)
                 {
-                    obj.SetActive(true); // Activate fire objects
+                    obj.SetActive(true);
                 }
             }
 
             Debug.Log("Machine has overheated! Fire started. Handle the emergency.");
+        }
+    }
+
+    public void ExtinguishFire(GameObject fireObject)
+    {
+        if (fireObject != null)
+        {
+            fireObject.SetActive(false); // Disable this fire object
+            Debug.Log("Fire extinguished: " + fireObject.name);
+
+            CheckFireObjects(); // Check if all fires are out
         }
     }
 
@@ -163,21 +175,15 @@ public class MachineProduction : MonoBehaviour
         {
             if (obj != null && obj.activeSelf)
             {
-                return; // Exit if any fire object is still active
+                return; // Fire still exists, no cooldown yet
             }
         }
 
         // All fire objects are disabled, fire is put out
-        Debug.Log("Fire extinguished. Starting cooldown...");
+        Debug.Log("All fires extinguished. Starting cooldown...");
         StartCoroutine(Cooldown());
     }
-    public void StartMachine()
-    {
-        if (!isProducing && !isMachineOn)
-        {
-            isMachineOn = true;
-        }
-    }
+
     IEnumerator Cooldown()
     {
         isOnFire = false;
