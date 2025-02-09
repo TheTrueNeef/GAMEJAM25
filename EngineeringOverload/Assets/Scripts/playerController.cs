@@ -21,19 +21,25 @@ public class playerController : MonoBehaviour
     public List<GameObject> heldObjects = new List<GameObject>(5);
     public Transform objectHolder; // The empty Transform where objects will be placed
 
-    public ParticleSystem extinguisherEffect; // Fire extinguisher effect
+    public GameObject extinguisherTrigger; // Assign in inspector (Box Collider trigger)
+    public GameObject extinguisherEffectPrefab; // Fire extinguisher particle system prefab
     public AudioSource extinguisherSound; // Fire extinguisher sound
-    public float extinguisherRange = 3f; // How far the extinguisher reaches
-    public LayerMask fireLayer; // Layer mask for fire objects
+    public Transform extinguisherSpawnPoint; // Where the effect spawns
 
     private int selectedObjectIndex = 0;
     private bool isExtinguishing = false;
+    private GameObject activeExtinguisherEffect; // Stores instantiated effect
 
     void Start()
     {
         controller = GetComponent<CharacterController>();
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
+
+        if (extinguisherTrigger != null)
+        {
+            extinguisherTrigger.SetActive(false); // Ensure it's off at start
+        }
     }
 
     void Update()
@@ -45,11 +51,11 @@ public class playerController : MonoBehaviour
 
         HandleItemSelection();
 
-        if (Input.GetButton("Fire1"))
+        if (Input.GetButtonDown("Fire1"))
         {
             UseSelectedObject();
         }
-        else if (isExtinguishing)
+        if (Input.GetButtonUp("Fire1"))
         {
             StopExtinguisher();
         }
@@ -134,7 +140,7 @@ public class playerController : MonoBehaviour
             switch (selectedObjectIndex)
             {
                 case 0: // Fire Extinguisher
-                    UseFireExtinguisher();
+                    StartExtinguisher();
                     break;
                 case 1:
                     UseWrench();
@@ -155,27 +161,27 @@ public class playerController : MonoBehaviour
         }
     }
 
-    void UseFireExtinguisher()
+    void StartExtinguisher()
     {
         if (!isExtinguishing)
         {
             isExtinguishing = true;
-            if (extinguisherEffect != null) extinguisherEffect.Play();
+
+            // Instantiate extinguisher effect
+            if (extinguisherEffectPrefab != null && extinguisherSpawnPoint != null)
+            {
+                activeExtinguisherEffect = Instantiate(extinguisherEffectPrefab, extinguisherSpawnPoint.position, extinguisherSpawnPoint.rotation);
+                activeExtinguisherEffect.transform.SetParent(extinguisherSpawnPoint); // Attach to spawn point
+            }
+
             if (extinguisherSound != null) extinguisherSound.Play();
-        }
 
-        // Detect fire objects in front of the player
-        Collider[] fireObjects = Physics.OverlapSphere(transform.position + transform.forward * 1.5f, extinguisherRange, fireLayer);
-        foreach (Collider fire in fireObjects)
-        {
-            Debug.Log($"Extinguishing {fire.name}");
-            fire.gameObject.SetActive(false);
-        }
+            if (extinguisherTrigger != null)
+            {
+                extinguisherTrigger.SetActive(true);
+            }
 
-        // If no fire objects are detected, stop extinguishing
-        if (fireObjects.Length == 0)
-        {
-            StopExtinguisher();
+            Debug.Log("Fire Extinguisher Activated!");
         }
     }
 
@@ -184,9 +190,22 @@ public class playerController : MonoBehaviour
         if (isExtinguishing)
         {
             isExtinguishing = false;
-            if (extinguisherEffect != null) extinguisherEffect.Stop();
+
+            // Destroy extinguisher effect when stopping
+            if (activeExtinguisherEffect != null)
+            {
+                Destroy(activeExtinguisherEffect);
+                activeExtinguisherEffect = null;
+            }
+
             if (extinguisherSound != null) extinguisherSound.Stop();
-            Debug.Log("Stopped Fire Extinguisher.");
+
+            if (extinguisherTrigger != null)
+            {
+                extinguisherTrigger.SetActive(false);
+            }
+
+            Debug.Log("Fire Extinguisher Stopped.");
         }
     }
 
