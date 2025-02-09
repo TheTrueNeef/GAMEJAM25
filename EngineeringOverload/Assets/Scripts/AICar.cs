@@ -13,15 +13,14 @@ public class AICar : MonoBehaviour
     public TMP_Text productCountText;
     public TMP_Text loadingText; // Text for displaying loading progress
     public float loadWaitTime = 5f;
-
-    private bool isWaitingForLoad = true;
+    public GameObject ProductLoader;
+    public GameObject ProductContainer;
+    private bool isWaitingForLoad = false;
     private float loadProgress = 0f;
     private float currentSpeed = 0f;
-    private float splineLength = 1f; // Adjust this based on your spline length
 
     void Start()
     {
-        StartCoroutine(WaitForLoad()); // Load at start
         UpdateProductUI();
     }
 
@@ -35,22 +34,23 @@ public class AICar : MonoBehaviour
         // Move along the spline
         dollyCart.SplinePosition += currentSpeed * Time.deltaTime;
 
-        // Check if the truck has reached the end of the spline
-        if (dollyCart.SplinePosition >= splineLength && productCount == 0)
+        // Check if the truck is within the loading zone (between 765 and 770)
+        if (dollyCart.SplinePosition >= 758f && dollyCart.SplinePosition <= 762f && productCount == 0)
         {
-            dollyCart.SplinePosition = splineLength; // Clamp to endpoint
-            currentSpeed = 0f;
-
-            if (productCount == 0) // Stop only if empty
-            {
-                isWaitingForLoad = true;
-                StartCoroutine(WaitForLoad()); // Start loading
-            }
-            else
-            {
-                dollyCart.SplinePosition = 0f; // Instantly loop back
-            }
+            StartLoading();
         }
+        if(productCount != 0) { ProductContainer.SetActive(true); }
+        else { ProductContainer.SetActive(false); }
+    }
+
+    void StartLoading()
+    {
+        if (isWaitingForLoad) return; // Prevent multiple coroutine calls
+        Debug.Log("Truck entered loading zone, starting loading...");
+        currentSpeed = 0f;
+        dollyCart.SplinePosition = 761;
+        isWaitingForLoad = true;
+        StartCoroutine(WaitForLoad());
     }
 
     IEnumerator WaitForLoad()
@@ -67,7 +67,7 @@ public class AICar : MonoBehaviour
         }
 
         isWaitingForLoad = false;
-        productCount = Random.Range(1, 10); // Load new products
+        productCount += ProductLoader.GetComponent<ProductLoader>().LoadProducts();
         Debug.Log("Vehicle loaded with " + productCount + " products and ready to move.");
         UpdateLoadingUI(false);
         UpdateProductUI();
@@ -85,14 +85,7 @@ public class AICar : MonoBehaviour
     {
         if (loadingText != null)
         {
-            if (isVisible)
-            {
-                loadingText.text = "Loading... " + (loadProgress * 100f).ToString("F0") + "%";
-            }
-            else
-            {
-                loadingText.text = "";
-            }
+            loadingText.text = isVisible ? $"Loading... {(loadProgress * 100f):F0}%" : "";
         }
     }
 }
