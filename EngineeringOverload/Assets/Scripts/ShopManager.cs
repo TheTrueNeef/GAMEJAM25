@@ -8,12 +8,11 @@ public class ShopManager : MonoBehaviour
     private bool playerNearby = false; // To track if the player is near the NPC
     private bool shopOpen = false;  // To track if the shop menu is open
     private int factoryLevel = 1;  // Starting at Level 1
-    private int[] upgradeCosts = { 10, 30}; // Costs for Level 2 and 3
-    private CurrencyManager currencyManager;
+    private int[] upgradeCosts = { 100, 200}; // Costs for Level 2 and 3
+    public CurrencyManager currencyManager;
 
     void Start()
     {
-        currencyManager = FindObjectOfType<CurrencyManager>();
         shopUI.SetActive(false); // Initially, the shop UI is hidden
     }
 
@@ -78,9 +77,9 @@ public class ShopManager : MonoBehaviour
     void UpdateShopText()
     {
         if (factoryLevel == 1)
-            shopText.text = "Upgrade to Level 2: Cost: 1000 Flex Dollars";
+            shopText.text = $"Upgrade to Level 2: Cost: {upgradeCosts[0]} Flex Dollars";
         else if (factoryLevel == 2)
-            shopText.text = "Upgrade to Level 3: Cost: 10000 Flex Dollars";
+            shopText.text = $"Upgrade to Level 3: Cost: {upgradeCosts[1]} Flex Dollars";
         else
             shopText.text = "Max Level Reached!";
     }
