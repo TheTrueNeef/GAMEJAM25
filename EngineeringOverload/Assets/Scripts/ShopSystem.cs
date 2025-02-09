@@ -17,9 +17,9 @@ public class ShopSystem : MonoBehaviour
     private bool shopOpen = false;
     private bool nearShopOwner = false; // Tracks if the player is near the shop
 
-    private int vehicleSpeedCost = 5;
-    private int playerSpeedCost = 8;
-    private int machineSpeedCost = 10;
+    public int vehicleSpeedCost = 5;
+    public int playerSpeedCost = 8;
+    public int machineSpeedCost = 10;
 
     private float vehicleSpeedIncrease = 5f;
     private float vehicleMaxSpeedIncrease = 10f;
@@ -28,7 +28,7 @@ public class ShopSystem : MonoBehaviour
     private bool machineSpeedUpgraded = false;
     private bool vehicleSpeedUpgraded = false;
 
-    private int sellPriceCost = 20;
+    public int sellPriceCost = 20;
     private float sellPriceIncrease = 1.2f;
     private bool sellPriceUpgraded = false;
 
