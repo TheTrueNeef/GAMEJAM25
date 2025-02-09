@@ -1,5 +1,6 @@
 using UnityEngine;
 using TMPro;
+using System.Collections.Generic;
 
 public class ShopSystem : MonoBehaviour
 {
@@ -8,7 +9,7 @@ public class ShopSystem : MonoBehaviour
     public TextMeshProUGUI notificationText; // The UI text to show messages
     public CurrencyManager currencyManager;
     public AICar aiCar;
-    public MachineProduction machineProduction;
+    public List<MachineProduction> machineProductions; // List of MachineProduction objects
     public playerController playerController; // Reference to playerController script
     public Transform player; // Reference to the player's transform
     public Transform shopOwner; // Reference to the shop owner's position
@@ -68,7 +69,7 @@ public class ShopSystem : MonoBehaviour
 
         if (!shopOpen) return;
 
-        // Handle upgrade purchases (fixed duplicate KeyCode.Alpha3)
+        // Handle upgrade purchases
         if (Input.GetKeyDown(KeyCode.Alpha3))
         {
             UpgradeVehicleSpeed();
@@ -77,7 +78,7 @@ public class ShopSystem : MonoBehaviour
         {
             UpgradePlayerSpeed();
         }
-        else if (Input.GetKeyDown(KeyCode.Alpha4)) // Changed from Alpha3 to Alpha4
+        else if (Input.GetKeyDown(KeyCode.Alpha4))
         {
             UpgradeMachineSpeed();
         }
@@ -157,9 +158,9 @@ public class ShopSystem : MonoBehaviour
 
     void UpgradeMachineSpeed()
     {
-        if (machineProduction == null)
+        if (machineProductions == null || machineProductions.Count == 0)
         {
-            ShowNotification("MachineProduction reference is missing! Assign it in the Inspector.");
+            ShowNotification("MachineProduction references are missing! Assign them in the Inspector.");
             return;
         }
 
@@ -171,12 +172,16 @@ public class ShopSystem : MonoBehaviour
 
         if (currencyManager.SpendCurrency(machineSpeedCost))
         {
-            machineProduction.pressureBuildRate = 7f;
-            machineProduction.pressureReleaseRate = 6f;
-            machineProduction.cooldownTime = 2f;
+            // Apply the upgrade to all machines in the list
+            foreach (var machine in machineProductions)
+            {
+                machine.pressureBuildRate = 7f;
+                machine.pressureReleaseRate = 6f;
+                machine.cooldownTime = 2f;
+            }
             machineSpeedUpgraded = true; // Prevent future upgrades
 
-            ShowNotification("Machine Speed Upgraded! New Build Rate: 7, Release Rate: 4");
+            ShowNotification("Machine Speed Upgraded for all machines!");
         }
         else
         {
