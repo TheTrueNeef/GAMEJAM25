@@ -2144,8 +2144,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d6d8f7ee60b86e24d8a379fe7fb58cfb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  slotCount: 5
-  items: []
   slotImages:
   - {fileID: 162129565540717492}
   - {fileID: 9093524856059828555}
@@ -2155,6 +2153,7 @@ MonoBehaviour:
   selectedTexture: {fileID: 2800000, guid: 9b1ada89551ca3d4d9fc4ed4a15f5d79, type: 3}
   unselectedTexture: {fileID: 2800000, guid: 97b64f57e6b02524abe290fbef55aadf, type: 3}
   itemImages: []
+  heldItems: []
 --- !u!1 &6926248794826450736
 GameObject:
   m_ObjectHideFlags: 0
