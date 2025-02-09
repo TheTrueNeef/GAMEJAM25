@@ -11,6 +11,7 @@ public class MachineProduction : MonoBehaviour
     public float cooldownTime = 3f; // Cooldown time after emergency is handled
 
     public GameObject[] fireObjects = new GameObject[3]; // Fire objects with triggers
+    public GameObject siren; // Fire objects with triggers
 
     public float currentPressure = 0f;
     public bool isMachineOn = false;
@@ -52,7 +53,12 @@ public class MachineProduction : MonoBehaviour
 
         if (isOnFire)
         {
+            siren.SetActive(true);
             CheckFireObjects();
+        }
+        else
+        {
+            siren.SetActive(false);
         }
     }
 
