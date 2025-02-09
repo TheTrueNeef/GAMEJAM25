@@ -4,6 +4,8 @@ using TMPro;
 public class ShopSystem : MonoBehaviour
 {
     public GameObject shopPanel; // The UI panel for the shop
+    public GameObject notificationPanel; // The UI panel for notifications
+    public TextMeshProUGUI notificationText; // The UI text to show messages
     public CurrencyManager currencyManager;
     public AICar aiCar;
     public MachineProduction machineProduction;
@@ -31,6 +33,14 @@ public class ShopSystem : MonoBehaviour
 
     public SellPoint sellPoint;
 
+    void ToggleShop()
+    {
+        shopOpen = !shopOpen;
+        shopPanel.SetActive(shopOpen);
+
+        // Optional: Add menu sound effect here
+    }
+
     void Update()
     {
         // Check if the player is near the shop owner
@@ -43,16 +53,22 @@ public class ShopSystem : MonoBehaviour
             nearShopOwner = false;
         }
 
-        // Open the shop UI when pressing "E" near the shop owner
+        // Open/close shop with E when near owner
         if (nearShopOwner && Input.GetKeyDown(KeyCode.E))
         {
-            shopOpen = !shopOpen;
-            shopPanel.SetActive(shopOpen);
+            ToggleShop();
         }
 
-        if (!shopOpen) return; // If shop is closed, do nothing
+        // Close shop with Tab regardless of location
+        if (shopOpen && Input.GetKeyDown(KeyCode.Tab))
+        {
+            ToggleShop();
+            CloseNotificationPanel(); // Close notification when closing shop
+        }
 
-        // Handle upgrade purchases
+        if (!shopOpen) return;
+
+        // Handle upgrade purchases (fixed duplicate KeyCode.Alpha3)
         if (Input.GetKeyDown(KeyCode.Alpha3))
         {
             UpgradeVehicleSpeed();
@@ -61,7 +77,7 @@ public class ShopSystem : MonoBehaviour
         {
             UpgradePlayerSpeed();
         }
-        else if (Input.GetKeyDown(KeyCode.Alpha3))
+        else if (Input.GetKeyDown(KeyCode.Alpha4)) // Changed from Alpha3 to Alpha4
         {
             UpgradeMachineSpeed();
         }
@@ -71,17 +87,28 @@ public class ShopSystem : MonoBehaviour
         }
     }
 
+    void ShowNotification(string message)
+    {
+        notificationPanel.SetActive(true);
+        notificationText.text = message;
+    }
+
+    void CloseNotificationPanel()
+    {
+        notificationPanel.SetActive(false);
+    }
+
     void UpgradeVehicleSpeed()
     {
         if (vehicleSpeedUpgraded)
         {
-            Debug.Log("Vehicle speed upgrade already purchased!");
+            ShowNotification("Vehicle speed upgrade already purchased!");
             return;
         }
 
         if (aiCar == null)
         {
-            Debug.LogError("AICar reference is missing! Assign it in the Inspector.");
+            ShowNotification("AICar reference is missing! Assign it in the Inspector.");
             return;
         }
 
@@ -91,11 +118,11 @@ public class ShopSystem : MonoBehaviour
             aiCar.maxSpeed += vehicleMaxSpeedIncrease;
             vehicleSpeedUpgraded = true;
 
-            Debug.Log("Vehicle Speed Upgraded! New Max Speed: " + aiCar.maxSpeed);
+            ShowNotification($"Vehicle Speed Upgraded! New Max Speed: {aiCar.maxSpeed}");
         }
         else
         {
-            Debug.Log("Not enough money!");
+            ShowNotification("Not enough money!");
         }
     }
 
@@ -103,13 +130,13 @@ public class ShopSystem : MonoBehaviour
     {
         if (playerSpeedUpgraded)
         {
-            Debug.Log("Player speed upgrade already purchased!");
+            ShowNotification("Player speed upgrade already purchased!");
             return;
         }
 
         if (playerController == null)
         {
-            Debug.LogError("playerController reference is missing! Assign it in the Inspector.");
+            ShowNotification("playerController reference is missing! Assign it in the Inspector.");
             return;
         }
 
@@ -120,29 +147,25 @@ public class ShopSystem : MonoBehaviour
             playerController.jumpHeight += 1f;
             playerSpeedUpgraded = true;
 
-            Debug.Log("Player Speed Upgraded! New Walk Speed: " + playerController.walkSpeed +
-                      ", Sprint Speed: " + playerController.sprintSpeed +
-                      ", Jump Height: " + playerController.jumpHeight);
+            ShowNotification($"Player Speed Upgraded! New Walk Speed: {playerController.walkSpeed}, Sprint Speed: {playerController.sprintSpeed}, Jump Height: {playerController.jumpHeight}");
         }
         else
         {
-            Debug.Log("Not enough money!");
+            ShowNotification("Not enough money!");
         }
     }
-
 
     void UpgradeMachineSpeed()
     {
         if (machineProduction == null)
         {
-            Debug.LogError("MachineProduction reference is missing! Assign it in the Inspector.");
+            ShowNotification("MachineProduction reference is missing! Assign it in the Inspector.");
             return;
         }
 
-        // Ensure the upgrade only runs once
         if (machineSpeedUpgraded)
         {
-            Debug.Log("Machine speed upgrade already purchased!");
+            ShowNotification("Machine speed upgrade already purchased!");
             return;
         }
 
@@ -153,11 +176,11 @@ public class ShopSystem : MonoBehaviour
             machineProduction.cooldownTime = 2f;
             machineSpeedUpgraded = true; // Prevent future upgrades
 
-            Debug.Log("Machine Speed Upgraded! New Build Rate: 7, Release Rate: 4");
+            ShowNotification("Machine Speed Upgraded! New Build Rate: 7, Release Rate: 4");
         }
         else
         {
-            Debug.Log("Not enough money!");
+            ShowNotification("Not enough money!");
         }
     }
 
@@ -165,27 +188,26 @@ public class ShopSystem : MonoBehaviour
     {
         if (sellPriceUpgraded)
         {
-            Debug.Log("Sell price upgrade already purchased!");
+            ShowNotification("Sell price upgrade already purchased!");
             return;
         }
 
         if (sellPoint == null)
         {
-            Debug.LogError("SellPoint reference is missing! Assign it in the Inspector.");
+            ShowNotification("SellPoint reference is missing! Assign it in the Inspector.");
             return;
         }
 
         if (currencyManager.SpendCurrency(sellPriceCost))
         {
-            // Apply the sell price increase
             sellPoint.productSellPrice *= sellPriceIncrease;
             sellPriceUpgraded = true;
 
-            Debug.Log($"Sell Price Increased! New price: {sellPoint.productSellPrice:F2}");
+            ShowNotification($"Sell Price Increased! New price: {sellPoint.productSellPrice:F2}");
         }
         else
         {
-            Debug.Log("Not enough money!");
+            ShowNotification("Not enough money!");
         }
     }
 }
