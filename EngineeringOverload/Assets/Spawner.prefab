@@ -13,8 +13,8 @@ GameObject:
   - component: {fileID: 8988802283335209237}
   - component: {fileID: 7320000756302351615}
   m_Layer: 0
-  m_Name: structure-doorway-wide
-  m_TagString: Untagged
+  m_Name: Spawner
+  m_TagString: Conveyor
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
