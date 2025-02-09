@@ -147,7 +147,6 @@ public class TrainingModule : MonoBehaviour
             hotbarUI.SetActive(true);
 
         Cursor.lockState = CursorLockMode.None;
-        Cursor.visible = true;
     }
 
     bool FireExtinguisherPickedUp()

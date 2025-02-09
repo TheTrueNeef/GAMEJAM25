@@ -16106,7 +16106,7 @@ MonoBehaviour:
   warningIndicator: {fileID: 1310723168}
   flashbangCamera: {fileID: 2093248908}
   flashbangDuration: 2
-  currentTemperature: 50
+  currentTemperature: 0
 --- !u!65 &816835542
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -32345,6 +32345,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1572494371}
   - component: {fileID: 1572494370}
+  - component: {fileID: 1572494372}
   m_Layer: 0
   m_Name: shipCam
   m_TagString: Untagged
@@ -32372,7 +32373,7 @@ MonoBehaviour:
   m_StreamingVersion: 20241001
   m_LegacyPriority: 0
   Target:
-    TrackingTarget: {fileID: 0}
+    TrackingTarget: {fileID: 543450651778885431}
     LookAtTarget: {fileID: 0}
     CustomLookAtTarget: 0
   Lens:
@@ -32403,13 +32404,26 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1572494369}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.029197862, y: 0.96677625, z: -0.12925164, w: 0.21859822}
-  m_LocalPosition: {x: -159.66852, y: 23.507696, z: -30.454124}
+  m_LocalRotation: {x: 0.13967235, y: 0.7789041, z: -0.18688537, w: 0.5821289}
+  m_LocalPosition: {x: -285.4, y: 76.7, z: -38.6}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1572494372
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1572494369}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e8b78ac948f05a46a6d8339a503172b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  LookAtOffset: {x: 0, y: 0, z: 0}
 --- !u!4 &1572958638 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 5bf701771ded163448743b63ff47dba0, type: 3}
@@ -47585,6 +47599,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: characterSmall
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: c5a05d2d9eed5b6489e41e0887db3a64, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5866666021909216657, guid: c5a05d2d9eed5b6489e41e0887db3a64, type: 3}
       propertyPath: m_Controller
       value: 
@@ -48190,7 +48208,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1702043053}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9270cee3cfe53b147aaa23c7f99d48bb, type: 3}
   m_Name: 
@@ -48204,6 +48222,10 @@ MonoBehaviour:
   playerController: {fileID: 3218954720539172501}
   player: {fileID: 1013970864223064707}
   shopOwner: {fileID: 4244523908385859547}
+  vehicleSpeedCost: 5
+  playerSpeedCost: 8
+  machineSpeedCost: 10
+  sellPriceCost: 20
   sellPoint: {fileID: 1113757677}
 --- !u!4 &4244523908385859547 stripped
 Transform:
