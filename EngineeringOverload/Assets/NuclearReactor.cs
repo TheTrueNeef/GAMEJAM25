@@ -3,6 +3,7 @@ using UnityEngine.SceneManagement;
 using TMPro;
 using Unity.Cinemachine;
 using System.Collections;
+using Unity.Mathematics;
 
 public class NuclearReactor : MonoBehaviour
 {
@@ -20,6 +21,7 @@ public class NuclearReactor : MonoBehaviour
     private bool gameOver = false;
     private bool playerInTrigger = false;
     private bool isCooling = false;
+    public GameObject Explosion;
 
     void Update()
     {
@@ -76,6 +78,8 @@ public class NuclearReactor : MonoBehaviour
         warningIndicator.SetActive (false);
         gameOver = true;
         StartCoroutine(FlashbangEffect());
+        GameObject explode = Instantiate(Explosion, new Vector3(10, 0, -90), Quaternion.identity);
+        explode.transform.localScale = Vector3.one * 100;
     }
 
     void WinGame()
