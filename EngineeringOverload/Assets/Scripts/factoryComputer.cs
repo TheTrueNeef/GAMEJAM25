@@ -161,7 +161,7 @@ public class FactoryComputer : MonoBehaviour
         {
             playerController.enabled = true;
         }
-        computerCanvas.gameObject.SetActive(false);
+        //computerCanvas.gameObject.SetActive(false);
 
         // Activate Player Camera
         if (playerCamera != null)
