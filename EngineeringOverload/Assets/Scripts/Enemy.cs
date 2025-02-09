@@ -11,14 +11,22 @@ public class Enemy : MonoBehaviour
     State currentState = State.Running;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
-    float baseY;
-
+    private Animator anim;
     public float moveSpeed = 2f;
-    public float bobSpeed = 7f;
-    public float bobAmplitude = 0.5f;
+    private float timer = 1.5f;
+    bool rotating = false;
+    bool grabbed = false;
     void Start()
     {
-        baseY = transform.position.y;
+        anim = GetComponent<Animator>();
+
+        if (anim == null)
+        {
+            Debug.LogError("No Animator component found on Enemy!");
+            return;
+        }
+        
+        anim.SetBool("walking", true);
     }
 
     // Update is called once per frame
@@ -39,22 +47,40 @@ public class Enemy : MonoBehaviour
     {
         if (building.CompareTag("Attackable")){
             currentState = State.Attacking;
+            anim.SetBool("walking", false);
         }
     }
 
     private void Run()
     {
-        float newY = baseY + Mathf.Sin(Time.time * bobSpeed) * bobAmplitude;
-
-        // Move forward continuously
+        anim.speed = moveSpeed;
         transform.position += transform.forward * moveSpeed * Time.deltaTime;
-        
-        // Apply new Y position
-        transform.position = new Vector3(transform.position.x, newY, transform.position.z);
     }
 
+    Quaternion targetRotation;
     private void Attack()
     {
-        transform.eulerAngles += new Vector3(0,2,0);
+        anim.speed = 1f;
+
+        if (!grabbed) {
+            grabbed = true;
+            anim.SetTrigger("grab");
+        }
+        if (timer <= 0f) {
+            if (!rotating){
+                targetRotation = Quaternion.Euler(0, transform.eulerAngles.y + 180, 0);
+                rotating = true;
+            }
+            transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, Time.deltaTime * 10f);
+            if (Quaternion.Angle(transform.rotation, targetRotation) < 1f)
+            {
+                transform.rotation = targetRotation;
+                rotating = false;
+                anim.SetBool("walking", true);
+                currentState = State.Running;
+            }
+        } else {
+            timer -= Time.deltaTime;
+        }
     }
 }
