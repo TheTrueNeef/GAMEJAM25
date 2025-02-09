@@ -8,6 +8,7 @@ public class TrainingModule : MonoBehaviour
     [Header("UI Elements")]
     public TextMeshProUGUI instructionText;
     public float typingSpeed = 0.05f;
+    public GameObject hotbarUI;  // Assign hotbar UI GameObject
 
     [Header("Cinemachine Cameras")]
     public CinemachineCamera playerCamera;   // The player's default camera (Active after training)
@@ -34,6 +35,7 @@ public class TrainingModule : MonoBehaviour
         if (!isTrainingActive)
         {
             isTrainingActive = true;
+            DisablePlayerUI();  // Disable UI & cursor
             StartCoroutine(TrainingSequence());
         }
     }
@@ -80,10 +82,11 @@ public class TrainingModule : MonoBehaviour
         SwitchCamera(machinesCamera);
         yield return new WaitForSeconds(3f);
 
-        // Step 8: Training Complete - Switch back to Player Camera & Reactivate Movement
+        // Step 8: Training Complete - Switch back to Player Camera & Reactivate Movement/UI
         yield return StartCoroutine(DisplayInstruction("Training Complete!"));
         SwitchCamera(playerCamera);
         EnablePlayerMovement();
+        EnablePlayerUI();  // Enable UI & cursor
     }
 
     IEnumerator DisplayInstruction(string text)
@@ -126,10 +129,29 @@ public class TrainingModule : MonoBehaviour
     {
         if (playerMovementScript != null)
             playerMovementScript.enabled = true;
+            Cursor.lockState = CursorLockMode.Locked;
+    }
+
+    void DisablePlayerUI()
+    {
+        if (hotbarUI != null)
+            hotbarUI.SetActive(false);
+
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
+    }
+
+    void EnablePlayerUI()
+    {
+        if (hotbarUI != null)
+            hotbarUI.SetActive(true);
+
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
     }
 
     bool FireExtinguisherPickedUp()
     {
-        return fireExtinguisher.activeSelf == false || Input.GetKeyDown(KeyCode.E);
+        return fireExtinguisher.activeSelf == false;
     }
 }
