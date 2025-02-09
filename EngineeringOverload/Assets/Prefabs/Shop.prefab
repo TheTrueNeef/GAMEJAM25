@@ -108,12 +108,40 @@ PrefabInstance:
     - target: {fileID: 5866666021909216657, guid: c5a05d2d9eed5b6489e41e0887db3a64, type: 3}
       propertyPath: m_Controller
       value: 
-      objectReference: {fileID: 9100000, guid: 360a63874e9c1944e91436826432d572, type: 2}
+      objectReference: {fileID: 9100000, guid: 952a5127abb34a34bb29400f081d34a6, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: c5a05d2d9eed5b6489e41e0887db3a64, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2980997191973924229}
   m_SourcePrefab: {fileID: 100100000, guid: c5a05d2d9eed5b6489e41e0887db3a64, type: 3}
+--- !u!1 &248376090604300803 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: c5a05d2d9eed5b6489e41e0887db3a64, type: 3}
+  m_PrefabInstance: {fileID: 1131249498780489554}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &2980997191973924229
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 248376090604300803}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9270cee3cfe53b147aaa23c7f99d48bb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  shopPanel: {fileID: 0}
+  currencyManager: {fileID: 0}
+  aiCar: {fileID: 0}
+  machineProduction: {fileID: 0}
+  playerController: {fileID: 0}
+  player: {fileID: 0}
+  shopOwner: {fileID: 592707211572752569}
+  sellPoint: {fileID: 0}
 --- !u!4 &592707211572752569 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: c5a05d2d9eed5b6489e41e0887db3a64, type: 3}
