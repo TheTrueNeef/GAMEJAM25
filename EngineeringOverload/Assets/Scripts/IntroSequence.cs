@@ -10,6 +10,7 @@ public class IntroSequence : MonoBehaviour
     public CinemachineCamera mainGameCamera;
     public CinemachineCamera introCamera;
     public Canvas gameCanvas;
+    public TrainingModule trainingModule; // Reference to the Training Module script
 
     private string introText = "Microsoft Windows [Version 10.0.19045.5371]\n(c) Microsoft Corporation. All rights reserved.\n\n\nC:\\Users\\UWStudent>\\Coop-Student-Init.exe\n\nHello, Welcome to generic poorly managed engineering company. \nWe are so happy for you to be joining our team!\n[INPUT REQUIRED] Do you need training? (y/n): ";
     private bool awaitingTrainingInput = true;
@@ -32,13 +33,13 @@ public class IntroSequence : MonoBehaviour
             {
                 terminalText.text += "\nInitiating Training Module...\n";
                 awaitingTrainingInput = false;
-                StartCoroutine(SwitchToMainCamera());
+                StartCoroutine(SwitchToMainCamera(true));  // Pass `true` to start training
             }
             else if (Input.GetKeyDown(KeyCode.N))
             {
                 terminalText.text += "\nSkipping Training Module...\n";
                 awaitingTrainingInput = false;
-                StartCoroutine(SwitchToMainCamera());
+                StartCoroutine(SwitchToMainCamera(false)); // Pass `false` to skip training
             }
         }
     }
@@ -52,7 +53,7 @@ public class IntroSequence : MonoBehaviour
         }
     }
 
-    IEnumerator SwitchToMainCamera()
+    IEnumerator SwitchToMainCamera(bool startTraining)
     {
         yield return new WaitForSeconds(2f); // Optional delay before switching cameras
         introCamera.Priority = 0;
@@ -60,6 +61,12 @@ public class IntroSequence : MonoBehaviour
         if (gameCanvas != null)
         {
             gameCanvas.gameObject.SetActive(true);
+        }
+
+        // Start Training if the player chose 'Y'
+        if (startTraining && trainingModule != null)
+        {
+            trainingModule.StartTraining();
         }
     }
 }

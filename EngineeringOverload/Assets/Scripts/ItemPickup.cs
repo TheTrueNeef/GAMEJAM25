@@ -48,7 +48,7 @@ public class ItemPickup : MonoBehaviour
         {
             Debug.Log($"Enabling item in slot {slotIndex}");
             hotbar.AddItem(slotIndex);
-            Destroy(gameObject); // Remove the pickup from the world
+            gameObject.SetActive(false);
         }
         else
         {

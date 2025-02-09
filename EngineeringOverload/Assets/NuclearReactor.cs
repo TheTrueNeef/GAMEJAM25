@@ -15,7 +15,7 @@ public class NuclearReactor : MonoBehaviour
     public CinemachineCamera flashbangCamera; // Cinemachine camera for flashbang effect
     public float flashbangDuration = 2f; // Duration of flashbang effect
 
-    private float currentTemperature = 50f;
+    public float currentTemperature = 50f;
     private int currentDay = 0;
     private bool gameOver = false;
     private bool playerInTrigger = false;
