@@ -1,20 +1,29 @@
 using UnityEngine;
 using UnityEngine.UI;
-using System.Collections.Generic;
 
 public class Hotbar : MonoBehaviour
 {
-    public int slotCount = 5;
-    public List<GameObject> items = new List<GameObject>();
-    public RawImage[] slotImages; // Background slot textures
+    public RawImage[] slotImages; // UI background slot images
     public Texture selectedTexture;
     public Texture unselectedTexture;
-    public RawImage[] itemImages; // Item images in the hotbar
+
+    public GameObject[] itemImages; // UI item images (pre-assigned in Inspector)
+    public GameObject[] heldItems;  // 3D objects the player holds (pre-assigned in Inspector)
 
     private int selectedIndex = 0;
 
     void Start()
     {
+        if (slotImages.Length < 5 || itemImages.Length < 5 || heldItems.Length < 5)
+        {
+            Debug.LogError("Hotbar setup is incorrect! Ensure all slot images and held items are assigned.");
+            return;
+        }
+
+        // Disable all item images and held items at the start
+        foreach (var item in itemImages) item.SetActive(false);
+        foreach (var heldItem in heldItems) heldItem.SetActive(false);
+
         UpdateUI();
     }
 
@@ -38,20 +47,21 @@ public class Hotbar : MonoBehaviour
         float scroll = Input.GetAxis("Mouse ScrollWheel");
         if (scroll > 0f)
         {
-            SelectSlot((selectedIndex + 1) % slotCount);
+            SelectSlot((selectedIndex + 1) % 5);
         }
         else if (scroll < 0f)
         {
-            SelectSlot((selectedIndex - 1 + slotCount) % slotCount);
+            SelectSlot((selectedIndex - 1 + 5) % 5);
         }
     }
 
     void SelectSlot(int index)
     {
-        if (index >= 0 && index < slotCount)
+        if (index >= 0 && index < 5)
         {
             selectedIndex = index;
             UpdateUI();
+            UpdateHeldItem();
         }
     }
 
@@ -63,25 +73,36 @@ public class Hotbar : MonoBehaviour
         }
     }
 
-    public void AddItem(GameObject item, int slot, Texture itemTexture)
+    void UpdateHeldItem()
     {
-        if (slot >= 0 && slot < slotCount)
+        for (int i = 0; i < heldItems.Length; i++)
         {
-            if (items.Count <= slot)
-            {
-                while (items.Count <= slot)
-                {
-                    items.Add(null);
-                }
-            }
-            items[slot] = item;
-            itemImages[slot].texture = itemTexture; // Set item image
-            UpdateUI();
+            heldItems[i].SetActive(i == selectedIndex && itemImages[i].activeSelf);
         }
     }
 
-    public GameObject GetSelectedItem()
+    public void AddItem(int slot)
     {
-        return (selectedIndex < items.Count) ? items[selectedIndex] : null;
+        if (slot < 0 || slot >= 5)
+        {
+            Debug.LogError($"Invalid slot index: {slot}. Slot index must be between 0 and 4.");
+            return;
+        }
+
+        // Enable the corresponding item image
+        itemImages[slot].SetActive(true);
+
+        // If the slot is selected, enable the held item
+        if (slot == selectedIndex)
+        {
+            UpdateHeldItem();
+        }
+
+        UpdateUI();
+    }
+
+    public bool IsSlotEmpty(int slot)
+    {
+        return !itemImages[slot].activeSelf;
     }
 }
